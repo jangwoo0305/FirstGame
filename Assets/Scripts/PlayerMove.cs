@@ -22,6 +22,7 @@ public class NewBehaviourScript : MonoBehaviour
         // 이동
         float h = Input.GetAxisRaw("Horizontal"); // -1(왼쪽), 0(정지), 1(오른쪽)
 
+
         if (h != 0)
         {
             spriteRenderer.flipX = h < 0; // 왼쪽으로 이동하면 flipX를 true로 설정
@@ -31,6 +32,16 @@ public class NewBehaviourScript : MonoBehaviour
             spriteRenderer.flipX = h < 0; // 왼쪽으로 이동하면 flipX를 true로 설정
         }
         // 이동 중일 때만 방향 전환
+
+    // 하강 중일 때 (falling)
+    if (rigid.linearVelocity.y < 0) 
+    {
+        // 하강 속도 강제로 증가
+        rigid.linearVelocity = new Vector2(rigid.linearVelocity.x, Mathf.Max(rigid.linearVelocity.y, -15f));
+        anim.SetBool("isJumping", false); // 점프 상태 종료
+        anim.SetBool("isFalling", true); // 하강 애니메이션 계속
+    }
+
 
         // Running 애니메이션
         if (rigid.linearVelocity.normalized.x == 0)
