@@ -48,12 +48,6 @@ void Update()
         anim.SetBool("isJumping", false); // 점프 상태 종료
         anim.SetBool("isFalling", true); // 하강 애니메이션 계속
     }
-    else if (rigid.velocity.y > 0 && !Input.GetButton("Jump"))
-    {
-        // 점프 중 상승할 때
-        anim.SetBool("isJumping", true); // 상승 중에도 점프 애니메이션 계속
-        anim.SetBool("isFalling", false); // 하강 애니메이션 끄기
-    }
 
     // 착지 확인 (y 속도가 0에 가까워지면 착지)
     if (Mathf.Abs(rigid.velocity.y) < 0.1f)
