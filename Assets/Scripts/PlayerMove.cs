@@ -1,12 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     public float maxSpeed = 5f; // 최대 속도
-    public float jumpForce = 7f; // 점프 힘
+    public float jumpForce = 8f; // 점프 힘
     public Transform groundCheck; // 바닥 체크용 오브젝트
     public LayerMask groundLayer; // 바닥 감지 레이어
 
@@ -26,62 +25,69 @@ public class PlayerController : MonoBehaviour
         anim = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
 
-        originalOffset = boxCollider.offset;     
-    }
+        originalOffset = boxCollider.offset;
 
+    }
 
     void Update()
     {
-        // 좌우 이동 입력
         float h = Input.GetAxisRaw("Horizontal");
 
-        // 방향 전환
+        // 좌우 키 입력에 따라 flipX 설정 (스프라이트 반전만 담당)
         if (h != 0)
         {
-            spriteRenderer.flipX = h < 0;
+            spriteRenderer.flipX = h < 0;  // 좌측 방향일 때 flipX 활성화
             FlipCollider(spriteRenderer.flipX);
+            anim.SetBool("isRunning", true); // 좌우 키 입력 시 달리기 애니메이션
+        }
+        else
+        {
+            anim.SetBool("isRunning", false); // 좌우 키 입력 없으면 달리기 애니메이션 끄기
         }
 
         // 바닥 체크 (Raycast)
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, 0.9f, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, 0.5f, groundLayer);
 
-        //Debug.DrawRay(transform.position, Vector2.down * 0.3f, Color.red); Debug.DrawRay(transform.position, Vector2.down * 1f, Color.red);
+        // 🔍 isGrounded 값 확인하기
+        Debug.Log("Is Grounded: " + isGrounded);
 
-        // 점프 처리
+        // Ray를 그려서 확인
+        Debug.DrawRay(groundCheck.position, Vector2.down * 0.5f, isGrounded ? Color.green : Color.red);
+
+        // 점프 입력 처리
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-            rigid.linearVelocity = new Vector2(rigid.linearVelocity.x, jumpForce);
+            Debug.Log("Jumping!");  // 점프 입력 감지 확인
             anim.SetBool("isJumping", true);
             anim.SetBool("isFalling", false);
+            rigid.linearVelocity = new Vector2(rigid.linearVelocity.x, jumpForce);
         }
 
-
-        // 하강 애니메이션
-        if (rigid.linearVelocity.y < 0)
+        // 낙하 애니메이션 처리
+        if (rigid.linearVelocity.y < 0 && !isGrounded)
         {
             anim.SetBool("isJumping", false);
             anim.SetBool("isFalling", true);
         }
 
-        // 착지 시 애니메이션 업데이트
-        if (isGrounded)
+        // 바닥에 닿았을 때 애니메이션 처리
+        if (isGrounded && rigid.linearVelocity.y <= 0)
         {
             anim.SetBool("isJumping", false);
             anim.SetBool("isFalling", false);
         }
-
-        // 애니메이션 업데이트
-        anim.SetBool("isRunning", h != 0);
     }
+
+
+
+
 
     void FixedUpdate()
     {
         float h = Input.GetAxisRaw("Horizontal");
-
-        // 즉각적인 반응을 위해 linearVelocity를 직접 조정
         rigid.linearVelocity = new Vector2(h * maxSpeed, rigid.linearVelocity.y);
-
     }
+
     void FlipCollider(bool isFlipped)
     {
         boxCollider.offset = new Vector2(isFlipped ? -originalOffset.x : originalOffset.x, originalOffset.y);
