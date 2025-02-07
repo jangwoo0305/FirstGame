@@ -76,6 +76,8 @@ public class PlayerController : MonoBehaviour
             anim.SetBool("isJumping", false);
             anim.SetBool("isFalling", false);
         }
+        
+        
     }
 
 
