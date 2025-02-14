@@ -117,9 +117,7 @@ Vector3 CheckSlope(float direction)
     return Vector3.zero;
 }
 
-/// <summary>
-/// 꼭대기에서 떨어지는 걸 방지하기 위해 캐릭터 발 아래 방향으로 추가 레이 발사
-/// </summary>
+
 /// <summary>
 /// 언덕 꼭대기에서도 정확하게 감지하기 위해 여러 개의 레이를 발사
 /// </summary>
