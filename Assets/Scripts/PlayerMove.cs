@@ -92,4 +92,6 @@ public class PlayerMove : MonoBehaviour
         boxCollider.offset = new Vector2(isFlipped ? -originalOffset.x : originalOffset.x, originalOffset.y);
         groundCheck.localPosition = new Vector2(isFlipped? -originallocalPosition.x : originallocalPosition.x, originallocalPosition.y);
     }
+
+
 }
