@@ -118,27 +118,31 @@ Vector3 CheckSlope(float direction)
 }
 
 
-/// <summary>
-/// 언덕 꼭대기에서도 정확하게 감지하기 위해 여러 개의 레이를 발사
-/// </summary>
-bool CheckGroundBelow()
-{
-    float rayDistance = 0.1f;
-    Vector2 rayOriginCenter = (Vector2)transform.position + Vector2.down * 0.75f;  // 발 밑으로 0.75f 내려줌
-    Vector2 rayOriginLeft = rayOriginCenter + Vector2.left * 0.1f;  // 왼쪽 발 끝
-    Vector2 rayOriginRight = rayOriginCenter + Vector2.right * 0.1f; // 오른쪽 발 끝
+    /// <summary>
+    /// 언덕 꼭대기에서도 정확하게 감지하기 위해 여러 개의 레이를 발사
+    /// </summary>
+    bool CheckGroundBelow()
+    {
+        float rayDistance = 0.07f;
+        Vector2 rayOriginCenter = (Vector2)transform.position + Vector2.down * 0.7f; // 발 밑으로 0.75f 내려줌
+        Vector2[] rayOrigins = new Vector2[]
+        {
+        rayOriginCenter,
+        rayOriginCenter + Vector2.left * 0.1f,  // 왼쪽 발 끝
+        rayOriginCenter + Vector2.right * 0.1f  // 오른쪽 발 끝
+        };
 
-    RaycastHit2D hitCenter = Physics2D.Raycast(rayOriginCenter, Vector2.down, rayDistance, groundLayer);
-    RaycastHit2D hitLeft = Physics2D.Raycast(rayOriginLeft, Vector2.down, rayDistance, groundLayer);
-    RaycastHit2D hitRight = Physics2D.Raycast(rayOriginRight, Vector2.down, rayDistance, groundLayer);
+        foreach (var rayOrigin in rayOrigins)
+        {
+            RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.down, rayDistance, groundLayer);
+            Debug.DrawRay(rayOrigin, Vector2.down * rayDistance, hit.collider != null ? Color.yellow : Color.red);
 
-    Debug.DrawRay(rayOriginCenter, Vector2.down * rayDistance, hitCenter ? Color.yellow : Color.red);
-    Debug.DrawRay(rayOriginLeft, Vector2.down * rayDistance, hitLeft ? Color.yellow : Color.red);
-    Debug.DrawRay(rayOriginRight, Vector2.down * rayDistance, hitRight ? Color.yellow : Color.red);
+            if (hit.collider != null)
+                return true;
+        }
 
-    // 어느 하나라도 바닥이 감지되면 true 반환
-    return hitCenter.collider != null || hitLeft.collider != null || hitRight.collider != null;
-}
+        return false;
+    }
 
     void FlipCollider(bool isFlipped)
     {
