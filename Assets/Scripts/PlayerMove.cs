@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
-    public float maxSpeed = 5f; // 최대 속도
+    public float maxSpeed = 6f; // 최대 속도
     public float jumpForce = 8f; // 점프 힘
     public Transform groundCheck; // 바닥 체크용 오브젝트
     public LayerMask groundLayer; // 바닥 감지 레이어
@@ -124,7 +124,11 @@ public class PlayerMove : MonoBehaviour
     bool CheckGroundBelow()
     {
         float rayDistance = 0.1f;
-        Vector2 rayOriginCenter = (Vector2)transform.position + Vector2.down * 0.65f;  // 발 밑으로 0.75f 내려줌
+        Collider2D col = GetComponent<Collider2D>();
+        if (col == null)
+            return false;
+
+        Vector2 rayOriginCenter = (Vector2)col.bounds.center + Vector2.down * 0.65f;  // 발 밑으로 0.75f 내려줌
         Vector2 rayOriginLeft = rayOriginCenter + Vector2.left * 0.1f;  // 왼쪽 발 끝
         Vector2 rayOriginRight = rayOriginCenter + Vector2.right * 0.1f; // 오른쪽 발 끝
 
